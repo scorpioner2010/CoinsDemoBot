@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Unity WebGL Player | CoinClicker</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script> <!-- Підключаємо Telegram Games API -->
   </head>
   <body style="text-align: center; padding: 0; border: 0; margin: 0;">
     <canvas id="unity-canvas" width=320 height=240 tabindex="-1" style="width: 320px; height: 240px; background: url('Build/CoinClicker.jpg') center / cover"></canvas>
@@ -31,9 +32,11 @@
         streamingAssetsUrl: "StreamingAssets",
         companyName: "DefaultCompany",
         productName: "CoinClicker",
-        productVersion: "1.0",
-        // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
-        // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
+        productVersion: "1.0"
+      }).then(function() {
+        // Ініціалізація Telegram Games API
+        const tg = window.Telegram.WebApp;
+        tg.ready();
       });
     </script>
   </body>
