@@ -61,7 +61,14 @@ public class TelegramBotManager : MonoBehaviour
                     );
                 }
             }
+        }
+        catch (Exception ex)
+        {
+            ConsoleController.LogError($"Помилка обробки команди: {ex.Message}");
+        }
 
+        try
+        {
             // Обробка callback-запитів
             if (update.Type == Telegram.Bot.Types.Enums.UpdateType.CallbackQuery && update.CallbackQuery != null)
             {
@@ -85,7 +92,7 @@ public class TelegramBotManager : MonoBehaviour
         }
         catch (Exception ex)
         {
-            ConsoleController.LogError($"Помилка обробки оновлення: {ex.Message}");
+            ConsoleController.LogError($"Помилка обробки callback-запиту: {ex.Message}");
         }
     }
 
