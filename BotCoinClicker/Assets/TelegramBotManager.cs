@@ -10,95 +10,104 @@ public class TelegramBotManager : MonoBehaviour
 {
     private static ITelegramBotClient botClient;
     private CancellationTokenSource cts;
+    public string myToken;
 
     void Start()
     {
-        botClient = new TelegramBotClient("7504020451:AAGa7AfMQAK6mm64fvf2zRgvFEo-Xpls1ug"); // Заміни на свій токен бота
+        botClient = new TelegramBotClient(myToken); // Replace with your bot token
         cts = new CancellationTokenSource();
 
-        // Запускаємо обробку повідомлень за допомогою Polling
+        // Start receiving updates using Polling
         var receiverOptions = new ReceiverOptions
         {
-            AllowedUpdates = { } // Отримуємо всі типи оновлень
+            AllowedUpdates = { } // Receive all update types
         };
 
         botClient.StartReceiving(HandleUpdateAsync, HandleErrorAsync, receiverOptions, cancellationToken: cts.Token);
-        ConsoleController.Log("Бот запущений!");
+        ConsoleController.Log("Bot started!");
     }
 
     async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
         if (update == null)
         {
-            ConsoleController.LogError("Оновлення відсутнє.");
+            ConsoleController.LogError("Update is null.");
             return;
         }
 
-        // Логи для отриманих повідомлень
+        // Log received messages
         if (update.Message != null)
         {
-            ConsoleController.Log("Отримано повідомлення: " + update.Message.Text);
+            ConsoleController.Log("Received message: " + update.Message.Text);
         }
         else
         {
-            ConsoleController.LogError("Повідомлення відсутнє.");
+            ConsoleController.LogError("Message is null.");
         }
 
         try
         {
-            // Перевірка на команду /getgametaras
+            // Check for /getgametaras command
             if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message && update.Message != null)
             {
                 var message = update.Message;
 
-                if (!string.IsNullOrEmpty(message.Text) && message.Text.ToLower() == "/getgametaras")
+                bool result = !string.IsNullOrEmpty(message.Text);
+                
+                if (result && message.Text.ToLower() == "/getgametaras")
                 {
-                    ConsoleController.Log("/getgametaras отримано, відправляємо гру.");
+                    ConsoleController.Log("/getgametaras received, sending game.");
 
                     await botClient.SendGameAsync(
-                        chatId: message.Chat.Id, // ID чату для гри
-                        gameShortName: "coinclicker" // Коротке ім'я гри
+                        chatId: message.Chat.Id, // Chat ID for the game
+                        gameShortName: "coinclicker" // Game short name
                     );
                 }
             }
         }
         catch (Exception ex)
         {
-            ConsoleController.LogError($"Помилка обробки команди: {ex.Message}");
+            ConsoleController.LogError($"Error processing command: {ex.Message}");
         }
 
         try
         {
-            // Обробка callback-запитів
+            // Handle callback queries
             if (update.Type == Telegram.Bot.Types.Enums.UpdateType.CallbackQuery && update.CallbackQuery != null)
             {
                 var callbackQuery = update.CallbackQuery;
 
-                // Перевірка на застарілість запиту
+                // Check if the request is outdated
                 if (callbackQuery.Message != null && (DateTime.UtcNow - callbackQuery.Message.Date).TotalSeconds > 60)
                 {
-                    ConsoleController.Log("Запит застарілий, ігноруємо.");
+                    ConsoleController.Log("Request is outdated, notifying user.");
+
+                    // Send a message to the user indicating the link is outdated
+                    await botClient.SendTextMessageAsync(
+                        chatId: callbackQuery.Message.Chat.Id,
+                        text: "The link is outdated. Please request a new link using the command /getgametaras."
+                    );
                     return;
                 }
 
-                // Відправляємо посилання на гру
+                // Send game link
                 await botClient.AnswerCallbackQueryAsync(
                     callbackQueryId: callbackQuery.Id,
-                    url: "https://scorpioner2010.github.io/CoinsDemoBot/" // Посилання на гру
+                    url: "https://scorpioner2010.github.io/CoinsDemoBot/" // Game URL
                 );
 
-                ConsoleController.Log("Запит на запуск гри відправлено.");
+                ConsoleController.Log("Game link sent.");
             }
         }
         catch (Exception ex)
         {
-            ConsoleController.LogError($"Помилка обробки callback-запиту: {ex.Message}");
+            ConsoleController.LogError($"Error handling callback query: {ex.Message}");
         }
     }
 
     Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
     {
-        ConsoleController.LogError($"Виникла помилка: {exception.Message}");
+        ConsoleController.LogError($"Error: {exception.Message}");
         return Task.CompletedTask;
     }
 
