@@ -3,12 +3,11 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity WebGL Player | CoinClicker</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script> <!-- Підключаємо Telegram Games API -->
+    <title>Unity WebGL Player | Crab Hunting</title>
   </head>
   <body style="text-align: center; padding: 0; border: 0; margin: 0;">
-    <canvas id="unity-canvas" width=320 height=240 tabindex="-1" style="width: 320px; height: 240px; background: url('Build/CoinClicker.jpg') center / cover"></canvas>
-    <script src="Build/CoinClicker.loader.js"></script>
+    <canvas id="unity-canvas" width=320 height=240 tabindex="-1" style="width: 320px; height: 240px; background: url('Build/crab-hunting.jpg') center / cover"></canvas>
+    <script src="Build/crab-hunting.loader.js"></script>
     <script>
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
         // Mobile device style: fill the whole browser client area with the game canvas:
@@ -26,17 +25,15 @@
       }
 
       createUnityInstance(document.querySelector("#unity-canvas"), {
-        dataUrl: "Build/CoinClicker.data",
-        frameworkUrl: "Build/CoinClicker.framework.js",
-        codeUrl: "Build/CoinClicker.wasm",
+        dataUrl: "Build/crab-hunting.data",
+        frameworkUrl: "Build/crab-hunting.framework.js",
+        codeUrl: "Build/crab-hunting.wasm",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "DefaultCompany",
-        productName: "CoinClicker",
-        productVersion: "1.0"
-      }).then(function() {
-        // Ініціалізація Telegram Games API
-        const tg = window.Telegram.WebApp;
-        tg.ready();
+        productName: "Crab Hunting",
+        productVersion: "1.0",
+        // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
+        // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
       });
     </script>
   </body>
